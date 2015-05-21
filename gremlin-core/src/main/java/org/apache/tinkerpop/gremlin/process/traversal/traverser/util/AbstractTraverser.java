@@ -27,6 +27,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.EmptyTraversalSideEff
 import org.apache.tinkerpop.gremlin.structure.util.Attachable;
 import org.apache.tinkerpop.gremlin.structure.util.reference.ReferenceFactory;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -35,6 +36,7 @@ import java.util.function.Function;
 public abstract class AbstractTraverser<T> implements Traverser<T>, Traverser.Admin<T> {
 
     protected T t;
+    protected Session session;
 
     protected AbstractTraverser() {
 
@@ -42,6 +44,21 @@ public abstract class AbstractTraverser<T> implements Traverser<T>, Traverser.Ad
 
     public AbstractTraverser(final T t) {
         this.t = t;
+    }
+
+    @Override
+    public void setSession(final Session session) {
+        this.session = session;
+    }
+
+    @Override
+    public Optional<Session> getSession() {
+        return Optional.ofNullable(this.session);
+    }
+
+    @Override
+    public void killSession() {
+        this.session = null;
     }
 
     /////////////
@@ -56,6 +73,8 @@ public abstract class AbstractTraverser<T> implements Traverser<T>, Traverser.Ad
         try {
             final AbstractTraverser<R> clone = (AbstractTraverser<R>) super.clone();
             clone.t = r;
+            if(null != this.session)
+                clone.session = new Session(this.session.getUUID(),this.session.getHostVertexId(),this.session.getLocalTraversalIndex());
             return clone;
         } catch (final CloneNotSupportedException e) {
             throw new IllegalStateException(e.getMessage(), e);
@@ -65,7 +84,11 @@ public abstract class AbstractTraverser<T> implements Traverser<T>, Traverser.Ad
     @Override
     public Admin<T> split() {
         try {
-            return (AbstractTraverser<T>) super.clone();
+            final AbstractTraverser<T> clone = (AbstractTraverser<T>) super.clone();
+
+            if(null != this.session)
+                clone.session = new Session(this.session.getUUID(),this.session.getHostVertexId(),this.session.getLocalTraversalIndex());
+            return clone;
         } catch (final CloneNotSupportedException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -175,7 +198,7 @@ public abstract class AbstractTraverser<T> implements Traverser<T>, Traverser.Ad
 
     @Override
     public boolean equals(final Object object) {
-        return object instanceof AbstractTraverser && ((AbstractTraverser) object).get().equals(this.t);
+        return object instanceof AbstractTraverser && ((AbstractTraverser) object).get().equals(this.t) && !this.getSession().isPresent();
     }
 
     @Override

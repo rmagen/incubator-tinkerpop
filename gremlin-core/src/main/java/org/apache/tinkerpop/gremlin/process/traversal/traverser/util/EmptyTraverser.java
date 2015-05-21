@@ -25,6 +25,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.EmptyPath;
 import org.apache.tinkerpop.gremlin.structure.util.Attachable;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -109,6 +110,21 @@ public final class EmptyTraverser<T> implements Traverser<T>, Traverser.Admin<T>
 
     @Override
     public <S> void sack(final S object) {
+
+    }
+
+    @Override
+    public Optional<Session> getSession() {
+        return Optional.empty();
+    }
+
+    @Override
+    public void setSession(Session session) {
+
+    }
+
+    @Override
+    public void killSession() {
 
     }
 

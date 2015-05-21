@@ -21,6 +21,8 @@ package org.apache.tinkerpop.gremlin.process.traversal;
 import org.apache.tinkerpop.gremlin.structure.util.Attachable;
 
 import java.io.Serializable;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -146,6 +148,12 @@ public interface Traverser<T> extends Serializable, Comparable<Traverser<T>>, Cl
      */
     public interface Admin<T> extends Traverser<T>, Attachable<T> {
 
+        public Optional<Session> getSession();
+
+        public void setSession(final Session session);
+
+        public void killSession();
+
         public static final String HALT = "halt";
 
         /**
@@ -265,5 +273,31 @@ public interface Traverser<T> extends Serializable, Comparable<Traverser<T>>, Cl
          * @return the traversal sideEffects of the traverser
          */
         public TraversalSideEffects getSideEffects();
+
+        public static class Session implements Serializable {
+
+            private final UUID uuid;
+            private final Object hostVertexId;
+            private final int localTraversalIndex;
+
+            public Session(final UUID uuid, final Object hostVertexId, final int localTraversalIndex) {
+                this.uuid = uuid;
+                this.hostVertexId = hostVertexId;
+                this.localTraversalIndex = localTraversalIndex;
+            }
+
+            public UUID getUUID() {
+                return this.uuid;
+            }
+
+            public Object getHostVertexId() {
+                return this.hostVertexId;
+            }
+
+            public int getLocalTraversalIndex() {
+                return this.localTraversalIndex;
+            }
+
+        }
     }
 }

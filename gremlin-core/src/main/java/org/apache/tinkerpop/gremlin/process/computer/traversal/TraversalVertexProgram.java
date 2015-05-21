@@ -56,10 +56,13 @@ import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 
 
@@ -77,12 +80,13 @@ import java.util.function.Function;
 public final class TraversalVertexProgram implements VertexProgram<TraverserSet<?>> {
 
     public static final String HALTED_TRAVERSERS = "gremlin.traversalVertexProgram.haltedTraversers";
+    public static final String SESSION_TRAVERSERS = "gremlin.traversalVertexProgram.sessionTraversers";
     private static final String VOTE_TO_HALT = "gremlin.traversalVertexProgram.voteToHalt";
     public static final String TRAVERSAL_SUPPLIER = "gremlin.traversalVertexProgram.traversalSupplier";
 
     // TODO: if not an adjacent traversal, use Local message scope -- a dual messaging system.
     private static final Set<MessageScope> MESSAGE_SCOPES = new HashSet<>(Collections.singletonList(MessageScope.Global.instance()));
-    private static final Set<String> ELEMENT_COMPUTE_KEYS = new HashSet<>(Arrays.asList(HALTED_TRAVERSERS, TraversalSideEffects.SIDE_EFFECTS));
+    private static final Set<String> ELEMENT_COMPUTE_KEYS = new HashSet<>(Arrays.asList(SESSION_TRAVERSERS, HALTED_TRAVERSERS, TraversalSideEffects.SIDE_EFFECTS));
     private static final Set<String> MEMORY_COMPUTE_KEYS = new HashSet<>(Collections.singletonList(VOTE_TO_HALT));
 
     private ConfigurationTraversal<?, ?> configurationTraversal;
@@ -147,6 +151,8 @@ public final class TraversalVertexProgram implements VertexProgram<TraverserSet<
         if (memory.isInitialIteration()) {    // ITERATION 1
             final TraverserSet<Object> haltedTraversers = new TraverserSet<>();
             vertex.property(VertexProperty.Cardinality.single, HALTED_TRAVERSERS, haltedTraversers);
+            vertex.property(VertexProperty.Cardinality.single, SESSION_TRAVERSERS, new StepSessions(vertex));
+
 
             if (!(this.traversal.getStartStep() instanceof GraphStep))
                 throw new UnsupportedOperationException("TraversalVertexProgram currently only supports GraphStep starts on vertices or edges");

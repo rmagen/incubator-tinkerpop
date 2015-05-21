@@ -41,6 +41,10 @@ public class ReferenceVertex extends ReferenceElement<Vertex> implements Vertex 
 
     }
 
+    private ReferenceVertex(final Object vertexId) {
+        this.id = vertexId;
+    }
+
     public ReferenceVertex(final Vertex vertex) {
         super(vertex);
     }
@@ -83,5 +87,9 @@ public class ReferenceVertex extends ReferenceElement<Vertex> implements Vertex 
     @Override
     public String toString() {
         return StringFactory.vertexString(this);
+    }
+
+    public static ReferenceVertex of(final Object vertexId) {
+        return new ReferenceVertex(vertexId);
     }
 }

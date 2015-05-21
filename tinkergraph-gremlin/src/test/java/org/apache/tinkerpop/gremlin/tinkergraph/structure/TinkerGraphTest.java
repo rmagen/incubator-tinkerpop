@@ -21,7 +21,10 @@ package org.apache.tinkerpop.gremlin.tinkergraph.structure;
 import org.apache.tinkerpop.gremlin.process.traversal.Operator;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalEngine;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.engine.ComputerTraversalEngine;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.io.graphml.GraphMLIo;
 import org.junit.Ignore;
@@ -158,14 +161,15 @@ public class TinkerGraphTest {
     @Test
     @Ignore
     public void testPlay5() throws Exception {
-        GraphTraversalSource g = TinkerFactory.createModern().traversal();
+        GraphTraversalSource g = TinkerFactory.createModern().traversal(GraphTraversalSource.computer());
         //g.V().has("name", "gremlin").inE("uses").order().by("skill", Order.incr).as("a").outV().as("b").path().forEachRemaining(System.out::println);
         //g.V().has("name", "gremlin").inE("uses").order().by("skill", Order.incr).as("a").outV().as("b").select().by("skill").by("name").forEachRemaining(System.out::println);
         //g.V().label().groupCount().as("x").select().forEachRemaining(System.out::println);
         //g.V().choose(__.outE().count().is(0L), __.as("x"), __.as("y")).select("x", "y").forEachRemaining(System.out::println);
         // g.V().hasLabel("person").values("age").is(P.lt(27).or(P.gt(29))).forEachRemaining(System.out::println);
-        System.out.println(g.V().as("a").out("knows").as("b").where(as("a","b").out("created")).select().by("name"));
-        g.V().as("a").out("knows").as("b").where(as("b").out("created").in("created").as("a","b")).select().by("name").forEachRemaining(System.out::println);
+        //System.out.println(g.V().as("a").out("knows").as("b").where(as("a","b").out("created")).select().by("name"));
+        //g.V().as("a").out("knows").as("b").where(as("b").out("created").in("created").as("a","b")).select().by("name").forEachRemaining(System.out::println);
+        g.V().both().has("name", within("marko", "josh", "peter")).path().by().by(out("created").values("name")).forEachRemaining(System.out::println);
     }
 
     @Test

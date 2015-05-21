@@ -62,6 +62,10 @@ public final class TraversalRing<A, B> implements Serializable, Cloneable {
         return this.traversals.size();
     }
 
+    public int getCurrentTraversal() {
+        return this.currentTraversal;
+    }
+
     public void addTraversal(final Traversal.Admin<A, B> traversal) {
         this.traversals.add(traversal);
     }
