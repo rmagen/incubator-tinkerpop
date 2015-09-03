@@ -172,8 +172,13 @@ public class BulkLoaderVertexProgram implements VertexProgram<Tuple> {
             graph = GraphFactory.open(configuration.subset(WRITE_GRAPH_CFG_KEY));
             LOGGER.info("Opened Graph instance: {}", graph);
             try {
-                if (!graph.features().graph().supportsConcurrentAccess()) {
-                    throw new IllegalStateException("The given graph instance does not allow concurrent access.");
+                //if (!graph.features().graph().supportsConcurrentAccess()) {
+                //    throw new IllegalStateException("The given graph instance does not allow concurrent access.");
+                //}
+                // TODO: the following check is a hack to allow Neo4j in standalone mode; this is very fragile and
+                //       should be replaced by the previous check once we have Neo4j HA available
+                if (!graph.features().graph().supportsPersistence()) {
+                    throw new IllegalStateException("The given graph instance does not support persistence.");
                 }
                 g = graph.traversal();
             } catch (Exception e) {
