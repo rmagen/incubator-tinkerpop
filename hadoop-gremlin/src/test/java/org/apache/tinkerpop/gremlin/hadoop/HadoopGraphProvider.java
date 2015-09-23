@@ -20,7 +20,6 @@ package org.apache.tinkerpop.gremlin.hadoop;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.giraph.conf.GiraphConstants;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.tinkerpop.gremlin.AbstractGraphProvider;
 import org.apache.tinkerpop.gremlin.LoadGraphWith;
 import org.apache.tinkerpop.gremlin.TestHelper;
@@ -127,7 +126,8 @@ public class HadoopGraphProvider extends AbstractGraphProvider {
 
             /// spark configuration
             put("spark.master", "local[4]");
-            put("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+            //put("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+            put("spark.serializer", "org.apache.tinkerpop.gremlin.hadoop.process.computer.spark.io.gryo.GryoSerializer");
             // put("spark.kryo.registrationRequired",true);
         }};
     }
