@@ -51,17 +51,13 @@ public final class GryoSerializerInstance extends SerializerInstance {
 
     @Override
     public <T> T deserialize(final ByteBuffer byteBuffer, final ClassTag<T> classTag) {
-        final Input input = new Input();
-        input.setBuffer(byteBuffer.array());
-        return (T) this.kryo.readClassAndObject(input);
+        return (T) this.kryo.readClassAndObject(new Input(byteBuffer.array()));
     }
 
     @Override
     public <T> T deserialize(final ByteBuffer byteBuffer, final ClassLoader classLoader, final ClassTag<T> classTag) {
-        final Input input = new Input(10000000);
-        input.setBuffer(byteBuffer.array());
         this.kryo.setClassLoader(classLoader);
-        return (T) this.kryo.readClassAndObject(input);
+        return (T) this.kryo.readClassAndObject(new Input(byteBuffer.array()));
     }
 
     @Override
